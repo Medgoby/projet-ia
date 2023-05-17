@@ -39,6 +39,30 @@ def dummies(df):
     data=pd.get_dummies(df)
     return data
 
+def data_process(data):
+    data.dropna(inplace=True)
+    data=data[data['masterCategory']=="Apparel"]
+    data=data[['subCategory','articleType','usage','labels']]
+    #data=astype_cat(data)
+    # labels_map={"Toute l'Afrique":1,
+    #        "Afrique Ouest & Afrique Autrale & Afrique Centrale":2,
+    #        "Afrique du Nord":3}
+    # data['labels']=data['labels'].map(labels_map)
+
+def split(data):
+    from sklearn.model_selection import train_test_split
+    X=data.loc[:,data.columns!='labels']
+    X.columns=[col.replace(" ","_") for col in X.columns]
+    y=data.loc[:,'labels']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    return X_train, X_test, y_train, y_test
+
+def read_data(file):
+    df_styles=pd.read_csv(file,sep=';')
+    df_styles=df_styles.iloc[:,0:-1]
+    df_styles['filename'] = df_styles.apply(lambda row: str(row['id']) + ".jpg", axis=1)
+
+
 
 def input_(Apparel_Set,Bottomwear,Dress,Innerwear,Loungewear_and_Nightwear,Saree,Socks,Topwear,Casual,Ethnic,Formal,Party,Smart_Casual,Sports,Travel):
     user_input_dict={

@@ -6,7 +6,21 @@ import streamlit.components.v1 as stc
 import joblib
 import pickle as pkl
 from pathlib import Path
+from PIL import Image
+import scikitplot as skplt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+#from sklearn.metrics import plot_confusion_matrix, plot_roc_curve, plot_precision_recall_curve
 
+from streamlit_yellowbrick import st_yellowbrick
+from yellowbrick.classifier import ClassificationReport
+from yellowbrick.classifier import ConfusionMatrix
+from yellowbrick.classifier import ClassPredictionError
+from yellowbrick.model_selection import FeatureImportances
+
+
+import matplotlib.pyplot as plt
 import folium
 from streamlit_folium import st_folium, folium_static
 
@@ -20,6 +34,7 @@ import plotly.graph_objects as go
 
 import streamlit as st
 from streamlit_option_menu import option_menu
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 #data['labels']=data['season'].apply(lambda x: etiquetage(x))
 
@@ -30,6 +45,7 @@ st.set_page_config(
 
 #@st.cache_resource
 
+from features_engineering.utils import*
 
 
 DIRPATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -40,8 +56,16 @@ os.chdir(DIRPATH)
 
 
 
+#st.write(pd.read_csv("./data/styles.csv",sep=';'))
+
+#st.write(read_data("./data/styles.csv"))
+
+#read_data("./data/styles.csv")
+
+
 
 def main():
+    model = utils.load_model("./models/rf_model.pkl")
 
     html_temp = """ 
             <div style ="background-color:#1699de;padding:13px"> 
@@ -68,19 +92,14 @@ def main():
         col1,col2=st.columns(2)
 
         with col1:
-         st.image("https://www.leparisien.fr/resizer/NaGTvnYH3tCp1H5nW85oqHt8yV0=/arc-anglerfish-eu-central-1-prod-leparisien/public/4IFWKW45BNDVZNQPSENOHWQXCQ.jpg",
+            st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Image d'une decharge au Ghana</h>""", unsafe_allow_html=True)
+            st.image("https://www.leparisien.fr/resizer/NaGTvnYH3tCp1H5nW85oqHt8yV0=/arc-anglerfish-eu-central-1-prod-leparisien/public/4IFWKW45BNDVZNQPSENOHWQXCQ.jpg",
                     caption='Une decharge au Ghana')
             
         with col2:
-            # center on Liberty Bell, add marker
-            m = folium.Map(location=[39.949610, -75.150282], zoom_start=16)
-            folium.Marker(
-                [-8.783195, 34.50852299999997], popup="Liberty Bell", tooltip="Liberty Bell"
-            ).add_to(m)
-
-            # call to render Folium map in Streamlit
-            st_data = st_folium(m, width=725)
-            
+            st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Carte D'Afrique</h>""", unsafe_allow_html=True)
+            image = Image.open('./images/afrique.png')
+            st.image(image, caption="Les pays d'Afrique")            
 
     if choose=="Make Prediction":
 
@@ -127,103 +146,69 @@ def main():
             if pred==3:
                 st.warning("Ce type de vêtement peut être distribué en Afrique du Nord",icon="🚨")
 
+        X=pd.read_csv("./data/X.csv",index_col=0)
+        y=pd.read_csv("./data/y.csv",index_col=0)
+
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+
+        # skplt.metrics.plot_confusion_matrix(y_test, model.predict(X_test), normalize=True)
+        # #plt.figure(figsize=(8,8))
+        # plt.show()
+        # st.pyplot()
+
+        # from sklearn.metrics import classification_report
+        # classification_report(y_test, model.predict(X_test))
+
+        #classes = ["Toute l'Afrique", "Afrique Ouest & Afrique Autrale & Afrique Centrale","Afrique du Nord"]
+        #classes = [1,2,3]
+
+        col1,col2=st.columns([2,2])
+        with col1:
+            st.subheader("Classification Report Metrics")
+            vizualizer = ClassificationReport(model, support=True)
+            vizualizer.fit(X_train, y_train)
+            vizualizer.score(X_test, y_test)
+            st_yellowbrick(vizualizer)
+
+        with col2:
+            st.subheader("Features Importances")
+            visualizer = FeatureImportances(model)
+            visualizer.fit(X_train, y_train)
+            st_yellowbrick(visualizer)
+            #visualizer.show();
+
+        st.subheader("Confusion Matrix")
+        cm = ConfusionMatrix(
+                model,
+                percent=True
+                #label_encoder={0: 'Adelie', 1: 'Chinstrap', 2: 'Gentoo'}
+            )
+        cm.fit(X_train, y_train)
+        cm.score(X_test, y_test)
+        st_yellowbrick(cm)
+            
+
+        
+
+
+        # visualizer = ClassPredictionError(
+        #     model)
+        # visualizer.fit(X_train, y_train)
+        # visualizer.score(X_test, y_test)
+        # st_yellowbrick(visualizer)
+
+
+       
+        # st.write(X_train)
+        # st.write(y_train)
+
+        
+
 
         
 if __name__ == '__main__':
 	main()
-
-
-
-#world_map= folium.Map(tiles="cartodbpositron")
-#st.map(world_map)
-
-
-# with st.sidebar:
-#     selected = option_menu("Main Menu", ["Home", 'Classification'], 
-#         icons=['house', 'clipboard-data'], menu_icon="cast", default_index=1)
-#     selected
-
-
-
-#{'Apparel Set','Bottomwear','Dress','Innerwear','Loungewear and Nightwear','Saree','Socks','Topwear'}
-
-
-#model = load_model("./models/xgb_model.pkl")
-
-#{'Casual', 'Ethnic', 'Formal', 'Party', 'Smart Casual', 'Sports', 'Travel'}
-
-# with st.sidebar.expander("➕ &nbsp; Variable choice", expanded=False):
-#     #source_type = st.radio("Variable", ["subCategory", "usual"], label_visibility="collapsed")
-
-#     with st.form("input_form"):
-#         #if source_type == "subCategory":
-#         Apparel=st.sidebar.selectbox("Apparel",(False,True))
-#         Bottomwear=st.sidebar.selectbox("Bottomwear",(False,True))
-#         Dress=st.sidebar.selectbox("Dress",(False,True))
-#         Innerwear=st.sidebar.selectbox("Innerwear",(False,True))
-#         Loungewear_Nightwear=st.sidebar.selectbox("Loungewear and Nightwear",(False,True))
-#         Saree=st.sidebar.selectbox("Saree",(False,True))
-#         Socks=st.sidebar.selectbox("Socks",(False,True))
-#         Topwear=st.sidebar.selectbox("Topwear",(False,True))
-
-#         #elif source_type == "usual":
-#         Casual=st.sidebar.selectbox("Casual",(False,True))
-#         Ethnic=st.sidebar.selectbox("Ethnic",(False,True))
-#         Formal=st.sidebar.selectbox("Formal",(False,True))
-#         Party=st.sidebar.selectbox("Party",(False,True))
-#         Smart_Casual=st.sidebar.selectbox("Smart Casual",(False,True))
-#         Sports=st.sidebar.selectbox("Sports",(False,True))
-#         Travel=st.sidebar.selectbox("Travel",(False,True))
-#         subCategory = st.form_submit_button(label="subCategory")
-
-# user_input=utils.input_(Apparel,Bottomwear,Dress,Innerwear,Loungewear_Nightwear,Saree,Socks,Topwear,Casual,Ethnic,Formal,Party,Smart_Casual,Sports,Travel)
-# #user_input=utils.dummies(user_input)
-# #user_input=(subCategory,usage,articleType)
-# st.write(user_input)
-
-
-
-# with st.sidebar.expander("➕Add Media", expanded=False):
-#     Category=st.selectbox("Category",('Apparel Set',
-#                                   'Bottomwear',
-#                                   'Dress',
-#                                   'Innerwear',
-#                                   'Loungewear and Nightwear',
-#                                   'Saree',
-#                                   'Socks',
-#                                   'Topwear'
-#                                   )
-#             )
-
-# with st.sidebar.expander("subCategory", expanded=False):
-#     subCategory=st.selectbox("subCategory",('Casual', 'Ethnic', 'Formal', 'Party', 'Smart Casual', 'Sports', 'Travel'
-#                                     )
-#                 )
-    
-# with st.sidebar.expander("Type", expanded=False):
-#     Type=st.selectbox("Type",('Baby Dolls','Bath Robe','Belts','Blazers','Booties','Boxers','Bra','Briefs','Camisoles','Capris',
-#                                 'Churidar','Clothing Set','Dresses','Dupatta','Innerwear Vests','Jackets','Jeans','Jeggings',
-#                                 'Jumpsuit','Kurta Sets','Kurtas','Kurtis','Leggings','Lehenga Choli','Lounge Pants','Lounge Shorts',
-#                                 'Lounge Tshirts','Nehru Jackets','Night suits','Nightdress','Patiala','Rain Jacket','Robe',
-#                                 'Rompers','Salwar','Salwar and Dupatta','Sarees','Shapewear','Shirts','Shorts','Shrug','Skirts',
-#                                 'Stockings','Suits','Suspenders','Sweaters','Sweatshirts','Swimwear','Tights','Tops','Track Pants',
-#                                 'Tracksuits','Trousers','Trunk','Tshirts','Tunics','Waistcoat'
-#                         )
-#                 )
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
