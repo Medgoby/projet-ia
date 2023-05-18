@@ -27,7 +27,8 @@ from streamlit_folium import st_folium, folium_static
 path=Path.cwd().parent
 os.chdir(path)
 
-from features_engineering.utils import*
+from features_engineering.utils import load_model
+from features_engineering.utils import input_
 
 import plotly.express as px
 import plotly.graph_objects as go
