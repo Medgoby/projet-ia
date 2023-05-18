@@ -27,7 +27,7 @@ from streamlit_folium import st_folium, folium_static
 path=Path.cwd().parent
 os.chdir(path)
 
-from features_engineering import utils
+from features_engineering.utils import*
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -45,7 +45,7 @@ st.set_page_config(
 
 #@st.cache_resource
 
-from features_engineering.utils import*
+#from features_engineering.utils import*
 
 
 DIRPATH = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -65,7 +65,7 @@ os.chdir(DIRPATH)
 
 
 def main():
-    model = utils.load_model("./models/rf_model.pkl")
+    model =load_model("./models/rf_model.pkl")
 
     html_temp = """ 
             <div style ="background-color:#1699de;padding:13px"> 
@@ -103,7 +103,7 @@ def main():
 
     if choose=="Make Prediction":
 
-        model = utils.load_model("./models/rf_model.pkl")
+        model =load_model("./models/rf_model.pkl")
         #model = load_model("./models/rf_model.pkl")
 
         with st.sidebar.expander("➕ &nbsp; Variable choice", expanded=False):
@@ -130,7 +130,7 @@ def main():
                 Travel=st.sidebar.selectbox("Travel",(False,True))
                 #subCategory = st.form_submit_button(label="subCategory")
 
-        user_input=utils.input_(Apparel_Set,Bottomwear,Dress,Innerwear,Loungewear_and_Nightwear,Saree,Socks,Topwear,Casual,Ethnic,Formal,Party,Smart_Casual,Sports,Travel)
+        user_input=input_(Apparel_Set,Bottomwear,Dress,Innerwear,Loungewear_and_Nightwear,Saree,Socks,Topwear,Casual,Ethnic,Formal,Party,Smart_Casual,Sports,Travel)
         #user_input=utils.dummies(user_input)
         #user_input=(subCategory,usage,articleType)
         st.write(user_input)
@@ -165,20 +165,23 @@ def main():
 
         col1,col2=st.columns([2,2])
         with col1:
-            st.subheader("Classification Report Metrics")
+            #st.subheader("Classification Report Metrics")
+            st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Classification Report Metrics</h>""", unsafe_allow_html=True)
             vizualizer = ClassificationReport(model, support=True)
             vizualizer.fit(X_train, y_train)
             vizualizer.score(X_test, y_test)
             st_yellowbrick(vizualizer)
 
         with col2:
-            st.subheader("Features Importances")
+            #st.subheader("Features Importances")
+            st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Features Importances</h>""", unsafe_allow_html=True)
             visualizer = FeatureImportances(model)
             visualizer.fit(X_train, y_train)
             st_yellowbrick(visualizer)
             #visualizer.show();
 
-        st.subheader("Confusion Matrix")
+        #st.subheader("Confusion Matrix")
+        st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Confusion Matrix</h>""", unsafe_allow_html=True)
         cm = ConfusionMatrix(
                 model,
                 percent=True
