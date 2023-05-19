@@ -88,6 +88,7 @@ def main():
                                     "nav-link-selected": {"background-color": "#1699de"},
                                 }
                             )
+    st.markdown(" **CONTEXTE :** Des tonnes de vêtements en provenance des pays d’europe sont envoyés en Afrique afin d’aider les personnes dans le besoin ou d'être vendu à bas prix. Malheureusement une bonne partie de ces vêtements ne sont pas utilisés par la population africaine. Ces vêtements  finissent à la décharge pour plusieurs raisons mais principalement parce que le vêtement ne correspond pas au climat du pays de destination ou alors le vêtement arrive dans le pays de destination à une mauvaise période et n’est donc pas utile pour la population en ce moment. ")
         
     if choose=="Home":
         col1,col2=st.columns(2)
@@ -96,6 +97,8 @@ def main():
             st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Image d'une decharge au Ghana</h>""", unsafe_allow_html=True)
             st.image("https://www.leparisien.fr/resizer/NaGTvnYH3tCp1H5nW85oqHt8yV0=/arc-anglerfish-eu-central-1-prod-leparisien/public/4IFWKW45BNDVZNQPSENOHWQXCQ.jpg",
                     caption='Une decharge au Ghana')
+            st.markdown("""<h5 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Nous avons conçu cet application pour aider les donnateurs d'éviter d'envoyer des vêtements dans les pays d'Afrique dans lesquels le climat n'est pas favorable au port du vêtement et ainsi eviter ce qu'on voit sur l'image ci-dessus.</h5>""", unsafe_allow_html=True)
+
             
         with col2:
             st.markdown("""<h2 style='text-align: center;width:100% ;margin-left:-0%;padding: 0px 0px 0px 0px;color: #1699de;'>Carte D'Afrique</h>""", unsafe_allow_html=True)
