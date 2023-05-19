@@ -35,6 +35,9 @@ pip install -r requirements.txt
 Executer l'application depuis le terminal
 streamlit run app.py
 
+## Lien vers l'application
+https://medgoby-projet-ia-app-yu544e.streamlit.app/
+## Une vue de l'application
 
 ![Alt text](images/contexte.png)
 ![Alt text](images/all_countries.png)
