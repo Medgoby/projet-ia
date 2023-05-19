@@ -35,3 +35,8 @@ pip install -r requirements.txt
 Executer l'application depuis le terminal
 streamlit run app.py
 
+
+![Alt text](images/contexte.png)
+![Alt text](images/all_countries.png)
+![Alt text](images/Afrique_oco.png)
+
